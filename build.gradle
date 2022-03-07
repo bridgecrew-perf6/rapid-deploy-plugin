@@ -1,12 +1,16 @@
 plugins {
     id 'java'
+    id 'idea'
     id 'org.jetbrains.intellij' version '1.4.0'
 }
 
-group 'org.x0e'
+group 'com.gitee.x0e'
 version '1.0.0'
 
 repositories {
+    maven {
+        url 'https://maven.aliyun.com/repository/public'
+    }
     mavenCentral()
 }
 
@@ -16,8 +20,32 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version = '2021.2.4'
+    updateSinceUntilBuild = false
+    version = '2020.2'
+    plugins = ['java']
 }
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+compileJava {
+    options.compilerArgs << '-Xlint:deprecation'
+}
+
+runIde {
+    jbrVersion = "jbr-11_0_6b765.25"
+}
+
+buildPlugin {
+    buildSearchableOptions.enabled = false
+}
+
+dependencies {
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.2'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.2'
+}
+
 patchPluginXml {
     changeNotes = """
       Add change notes here.<br>

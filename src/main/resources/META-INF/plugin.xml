@@ -1,7 +1,7 @@
 <idea-plugin>
 
     <!-- 插件唯一id，不能和其他插件项目重复，推荐使用com.xxx.xxx的格式,插件不同版本之间不能更改，若没有指定，则与插件名称相同 -->
-    <id>com.x0e.rapid.deploy.plugin</id>
+    <id>com.gitee.x0e.idea.plugins</id>
 
     <!-- 插件名称，别人在官方插件库搜索你的插件时使用的名称 -->
     <name>Rapid Deploy</name>
@@ -13,7 +13,11 @@
     <vendor email="do@dodoo.co" url="https://gitee.com/x0e">x0e(灰鸟)</vendor>
 
     <!-- 插件版本变更信息，支持HTML标签;将展示在 settings | Plugins 对话框和插件仓库的Web页面 -->
-    <change-notes>支持FTP、SSH协议连接</change-notes>
+    <change-notes>
+        <![CDATA[
+            支持FTP、SSH协议连接
+        ]]>
+    </change-notes>
 
     <!-- 插件的描述 -->
     <description>
@@ -34,18 +38,25 @@
     <!-- 插件所依赖的其他插件的id -->
     <!-- 官网详细介绍: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html-->
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
 
     <!-- 声明应用组件 -->
+    <!-- 在IDEA启动的时候初始化，整个IDEA中只有一个实例 -->
     <application-components>
         <!-- 在这里添加应用组件 -->
+        <component>
+            <implementation-class>com.gitee.x0e.idea.plugins.compoents.TestDialog</implementation-class>
+        </component>
     </application-components>
 
     <!-- 声明项目组件 -->
+    <!-- IDEA会为每一个Project实例创建对应级别的Component -->
     <project-components>
         <!-- 在这里添加项目组件  -->
     </project-components>
 
     <!-- 声明模块组件 -->
+    <!-- IDEA会为每一个已经加载的Project中的每一个模块（Module）创建Module级别的Component -->
     <module-components>
         <!-- 在这里添加模块组件 -->
     </module-components>
@@ -63,5 +74,9 @@
     <!-- 添加Action -->
     <actions>
         <!-- 在这里添加action动作 -->
+        <action id="action_add" class="com.gitee.x0e.idea.plugins.actions.AddAction" text="添加服务器" description="用于部署">
+            <add-to-group group-id="ToolsMenu" anchor="first"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl T"/>
+        </action>
     </actions>
 </idea-plugin>
