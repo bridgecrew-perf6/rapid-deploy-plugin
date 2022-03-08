@@ -1,13 +1,10 @@
 <idea-plugin>
 
     <!-- 插件唯一id，不能和其他插件项目重复，推荐使用com.xxx.xxx的格式,插件不同版本之间不能更改，若没有指定，则与插件名称相同 -->
-    <id>com.gitee.x0e.idea.plugins</id>
+    <id>com.gitee.x0e.idea.plugin</id>
 
     <!-- 插件名称，别人在官方插件库搜索你的插件时使用的名称 -->
     <name>Rapid Deploy</name>
-
-    <!-- 插件版本 -->
-    <version>1.0.0.beta</version>
 
     <!-- 供应商主页和email-->
     <vendor email="do@dodoo.co" url="https://gitee.com/x0e">x0e</vendor>
@@ -31,21 +28,14 @@
         <![CDATA[
             <h2>v1.0.0</h2>
             <ul>
-                <li>add server management functions, support SSH, SFTP protocol.</li>
-                <li>add pre-build task execution.</li>
-                <li>added post-deploy health check and triggering Webhook.</li>
-                <li>added support for Maven and Gradle build tools.</li>
-                <li>added NPM and YARN project management tool support.</li>
+                <li>新增服务器管理功能，支持SSH、SFTP协议。</li>
+                <li>新增构建前任务执行。</li>
+                <li>新增部署后通过Webhook钩子通知部署结果。</li>
+                <li>新增Maven和Gradle构建工具的支持。</li>
+                <li>新增npm和yarn项目管理工具的支持。</li>
             </ul>
         ]]>
     </change-notes>
-
-    <!-- 声明插件所依赖的其他插件的坐标 -->
-    <!--    <depends></depends>-->
-
-    <!-- 插件兼容IDEA的最大和最小 build 号，两个属性可以任选一个或者同时使用 -->
-    <!--官网详细介绍：http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html-->
-    <idea-version since-build="192"/>
 
     <!-- 插件所依赖的其他插件的id -->
     <!-- 官网详细介绍: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html-->
@@ -57,9 +47,6 @@
     <!-- 在IDEA启动的时候初始化，整个IDEA中只有一个实例 -->
     <application-components>
         <!-- 在这里添加应用组件 -->
-        <component>
-            <implementation-class>com.gitee.x0e.idea.plugins.compoents.TestDialog</implementation-class>
-        </component>
     </application-components>
 
     <!-- 声明项目组件 -->
@@ -81,15 +68,191 @@
 
     <!-- 声明该插件对IDEA core或其他插件的扩展 -->
     <extensions defaultExtensionNs="com.intellij">
-        <!-- 在这里添加扩展 -->
+        <!-- 注册ConfigType -->
+        <configurationType implementation="com.gitee.x0e.idea.plugin.config.RunConfigurationType"/>
+
+        <!-- 注册侧边窗口 secondary:true表示设置在tool window bar最下方 -->
+        <!-- 工具窗口扩展 -->
+        <toolWindow id="Custom Tool Window Example" anchor="right" icon="AllIcons.Actions.Lightning"
+                    factoryClass="com.gitee.x0e.idea.plugin.window.CustomToolWindowFactory"
+                    secondary="true"/>
+
+        <!-- 新增页面到Setting和Preferences窗口 -->
+        <applicationConfigurable parentId="tools" instance="com.intellij.openapi.options.Configurable"
+                                 id="org.company.ApplicationSettingsConfigurable"
+                                 displayName="Deploy Setting"/>
+        <projectConfigurable parentId="tools" instance="com.intellij.openapi.options.Configurable"
+                             id="org.company.ProjectSettingsConfigurable" displayName="Deploy Setting"
+                             nonDefaultProject="true"/>
+        <!-- 注册Service 和 Configuration-->
+        <applicationService serviceImplementation="com.gitee.x0e.idea.plugin.setting.Settings"/>
+        <applicationConfigurable instance="com.gitee.x0e.idea.plugin.setting.MainSetting" dynamic="true"/>
     </extensions>
 
     <!-- 添加Action -->
     <actions>
         <!-- 在这里添加action动作 -->
-        <action id="action_add" class="com.gitee.x0e.idea.plugins.actions.AddAction" text="添加服务器" description="用于部署">
+        <group id="com.gitee.x0e.idea.plugin.action.group.AddActionGroup"
+               class="com.gitee.x0e.idea.plugin.action.group.AddActionGroup" popup="true" text="Add Deploy">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="Ctrl T"/>
+        </group>
+        <action id="com.gitee.x0e.idea.plugin.action.AddAction" class="com.gitee.x0e.idea.plugin.action.AddAction"
+                text="Add Deploy Host"
+                description="Adding deployment server">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+        </action>
+
+        <!-- 普通的弹出菜单 -->
+        <action class="com.gitee.x0e.idea.plugin.action.popup.ActionGroupPopupAction"
+                id="com.gitee.x0e.idea.plugin.action.popup.ActionGroupPopupAction"
+                text="ActionGroupPopupAction"
+                description="ActionGroupPopupAction">
+            <add-to-group group-id="PopupMenuActions" anchor="first"/>
+            <keyboard-shortcut first-keystroke="control alt 1" keymap="Mac OS X 10.5+"/>
+        </action>
+        <group id="popupGroup"/>
+        <action class="com.gitee.x0e.idea.plugin.action.popup.CustomFirstAction"
+                id="com.gitee.x0e.idea.plugin.action.popup.CustomFirstAction"
+                text="CustomFirstAction" description="CustomFirstAction">
+            <add-to-group group-id="popupGroup" anchor="first"/>
+        </action>
+        <action class="com.gitee.x0e.idea.plugin.action.popup.CustomSecondAction"
+                id="com.gitee.x0e.idea.plugin.action.popup.CustomSecondAction"
+                text="CustomSecondAction" description="CustomSecondAction">
+            <add-to-group group-id="popupGroup" anchor="after"
+                          relative-to-action="com.gitee.x0e.idea.plugin.action.popup.CustomFirstAction"/>
+        </action>
+
+        <!-- 自定义弹出菜单样式 -->
+        <action class="com.gitee.x0e.idea.plugin.action.popup.CustomComponentPopupAction"
+                id="com.gitee.x0e.idea.plugin.action.popup.CustomComponentPopupAction"
+                text="ComponentPopupAction" description="ComponentPopupAction">
+            <add-to-group group-id="PopupMenuActions" anchor="first"/>
+            <keyboard-shortcut first-keystroke="control alt 1" keymap="Mac OS X 10.5+"/>
+        </action>
+
+        <!-- 确认取消式弹出菜单 -->
+        <action class="com.gitee.x0e.idea.plugin.action.popup.ConfirmPopupAction"
+                id="com.gitee.x0e.idea.plugin.action.popup.ConfirmPopupAction"
+                text="ConfirmPopupAction" description="ConfirmPopupAction">
+            <add-to-group group-id="PopupMenuActions" anchor="first"/>
+            <keyboard-shortcut first-keystroke="control alt 1" keymap="Mac OS X 10.5+"/>
+        </action>
+
+        <!-- 多选式弹出菜单  -->
+        <action id="com.gitee.x0e.idea.plugin.action.popup.MultiChoosePopupAction"
+                class="com.gitee.x0e.idea.plugin.action.popup.MultiChoosePopupAction"
+                text="MultiChoosePopupAction" description="MultiChoosePopupAction">
+            <add-to-group group-id="PopupMenuActions" anchor="first"/>
+            <keyboard-shortcut first-keystroke="control alt 1" keymap="Mac OS X 10.5+"/>
+        </action>
+
+        <!-- 子菜单式弹出菜单 -->
+        <action id="com.gitee.x0e.idea.plugin.action.popup.SubGroupPopupAction"
+                class="com.gitee.x0e.idea.plugin.action.popup.SubGroupPopupAction"
+                text="SubGroupPopupAction" description="SubGroupPopupAction">
+            <add-to-group group-id="PopupMenuActions" anchor="first"/>
+            <keyboard-shortcut first-keystroke="control alt 1" keymap="Mac OS X 10.5+"/>
+        </action>
+        <group id="subOuterGroup"/>
+        <!--    popup为true代表这是一个子菜单    -->
+        <group id="subInnerGroup" popup="true" text="SubInnerGroup">
+            <add-to-group group-id="subOuterGroup" anchor="first"/>
+            <action class="com.gitee.x0e.idea.plugin.action.popup.SubAction" id="subAction"
+                    text="SubAction" description="SubAction">
+            </action>
+        </group>
+
+        <!-- 文件选择菜单 -->
+        <action id="com.gitee.x0e.idea.plugin.file.FileChooserAction"
+                class="com.gitee.x0e.idea.plugin.file.FileChooserAction"
+                text="FileChooserAction" description="FileChooserAction">
+            <add-to-group group-id="ToolsMenu" anchor="after"
+                          relative-to-action="com.gitee.x0e.idea.plugin.file.FileChooserAction"/>
+        </action>
+
+        <!-- List菜单 -->
+        <action id="com.gitee.x0e.idea.plugin.tree.ListAction" class="com.gitee.x0e.idea.plugin.tree.ListAction"
+                text="ListAction" description="ListAction">
+            <add-to-group group-id="ToolsMenu" anchor="after"
+                          relative-to-action="com.gitee.x0e.idea.plugin.file.FileChooserAction"/>
+        </action>
+
+        <!-- Tree菜单-->
+        <action id="com.gitee.x0e.idea.plugin.tree.TreeAction" class="com.gitee.x0e.idea.plugin.tree.TreeAction"
+                text="TreeAction" description="TreeAction">
+            <add-to-group group-id="ToolsMenu" anchor="after"
+                          relative-to-action="com.gitee.x0e.idea.plugin.tree.ListAction"/>
+        </action>
+
+        <!-- 分离器菜单 -->
+        <action id="com.gitee.x0e.idea.plugin.splitter.JBSplitterAction"
+                class="com.gitee.x0e.idea.plugin.splitter.JBSplitterAction"
+                text="JBSplitterAction" description="JBSplitterAction">
+            <add-to-group group-id="ToolsMenu" anchor="after"
+                          relative-to-action="com.gitee.x0e.idea.plugin.tree.TreeAction"/>
+        </action>
+
+        <!-- tab菜单 -->
+        <action id="com.gitee.x0e.idea.plugin.tab.JBTabAction" class="com.gitee.x0e.idea.plugin.tab.JBTabAction"
+                text="JBTabAction" description="JBTabAction">
+            <add-to-group group-id="ToolsMenu" anchor="after"
+                          relative-to-action="com.gitee.x0e.idea.plugin.splitter.JBSplitterAction"/>
+        </action>
+
+        <!-- 文本处理菜单 -->
+        <action id="com.gitee.x0e.idea.plugin.editor.EditorIllustrationAction"
+                class="com.gitee.x0e.idea.plugin.editor.EditorIllustrationAction"
+                text="Editor Replace Text" description="Replaces selected text with 'Replacement'.">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+        </action>
+
+        <!-- 编辑器坐标系统 -->
+        <action id="com.gitee.x0e.idea.plugin.editor.EditorAreaIllustration"
+                class="com.gitee.x0e.idea.plugin.editor.EditorAreaIllustration"
+                text="Caret Position" description="Caret position">
+            <add-to-group group-id="EditorPopupMenu" anchor="after"
+                          relative-to-action="com.gitee.x0e.idea.plugin.editor.EditorIllustrationAction"/>
+        </action>
+
+        <!-- 编辑器事件处理 -->
+        <action id="com.gitee.x0e.idea.plugin.project.GetContentSourceRootAction"
+                class="com.gitee.x0e.idea.plugin.project.GetContentSourceRootAction"
+                text="GetContentSourceRootAction" description="GetContentSourceRootAction">
+            <add-to-group group-id="EditorPopupMenu" anchor="after"
+                          relative-to-action="com.gitee.x0e.idea.plugin.editor.EditorIllustrationAction"/>
+        </action>
+
+        <!-- 获取项目下所有模块的Source Root -->
+        <action id="com.gitee.x0e.idea.plugin.project.ProjectFileIndexAction"
+                class="com.gitee.x0e.idea.plugin.project.ProjectFileIndexAction"
+                text="ProjectFileIndexAction" description="ProjectFileIndexAction">
+            <add-to-group group-id="ToolsMenu" anchor="after"
+                          relative-to-action="com.gitee.x0e.idea.plugin.project.GetContentSourceRootAction"/>
+        </action>
+
+        <!-- 获取到文件所属到模块 -->
+        <action id="com.gitee.x0e.idea.plugin.project.ProjectSdkAction"
+                class="com.gitee.x0e.idea.plugin.project.ProjectSdkAction"
+                text="ProjectSdkAction" description="ProjectSdkAction">
+            <add-to-group group-id="ToolsMenu" anchor="after"
+                          relative-to-action="com.gitee.x0e.idea.plugin.project.ProjectFileIndexAction"/>
+        </action>
+
+        <!-- 修改SDK -->
+        <action id="com.gitee.x0e.idea.plugin.project.ProjectStructureAction"
+                class="com.gitee.x0e.idea.plugin.project.ProjectStructureAction"
+                text="ProjectStructureAction" description="ProjectStructureAction">
+            <add-to-group group-id="ToolsMenu" anchor="after"
+                          relative-to-action="com.gitee.x0e.idea.plugin.project.ProjectSdkAction"/>
+        </action>
+
+        <!-- 监听Project Structure -->
+        <action id="com.gitee.x0e.idea.plugin.editor.EditorHandlerIllustration"
+                class="com.gitee.x0e.idea.plugin.editor.EditorHandlerIllustration"
+                text="EditorHandlerIllustration" description="EditorHandlerIllustration">
+            <add-to-group group-id="ToolsMenu" anchor="after"
+                          relative-to-action="com.gitee.x0e.idea.plugin.project.ProjectStructureAction"/>
         </action>
     </actions>
 </idea-plugin>

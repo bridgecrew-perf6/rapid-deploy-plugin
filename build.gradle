@@ -5,17 +5,13 @@ plugins {
 }
 
 group 'com.gitee.x0e'
-version '1.0.0'
+version '2021.1.0.0.beta'
 
 repositories {
     maven {
         url 'https://maven.aliyun.com/repository/public'
     }
     mavenCentral()
-}
-
-dependencies {
-
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
@@ -41,8 +37,16 @@ buildPlugin {
     buildSearchableOptions.enabled = false
 }
 
+buildSearchableOptions {
+    enabled = false
+}
+
 dependencies {
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.2'
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.2'
 }
 
+patchPluginXml {
+    version = project.version
+    sinceBuild = '193'
+}
