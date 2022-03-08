@@ -10,35 +10,48 @@
     <version>1.0.0.beta</version>
 
     <!-- 供应商主页和email-->
-    <vendor email="do@dodoo.co" url="https://gitee.com/x0e">x0e(灰鸟)</vendor>
-
-    <!-- 插件版本变更信息，支持HTML标签;将展示在 settings | Plugins 对话框和插件仓库的Web页面 -->
-    <change-notes>
-        <![CDATA[
-            支持FTP、SSH协议连接
-        ]]>
-    </change-notes>
+    <vendor email="do@dodoo.co" url="https://gitee.com/x0e">x0e</vendor>
 
     <!-- 插件的描述 -->
     <description>
         <![CDATA[
-            支出SSH、SFTP等协议.<br>
-            1. 支持Maven、Gradle等后端构建工具制品<br>
-            2. 支持yarn、npm等前端构建工具进行制品<br>
+            <h2>supports <a href="https://gitee.com/x0e/rapid-deploy-plugin">rapid deploy</a> and the following features:</h2>
+            <p/>
+            <ul>
+                <li>use to upload and deploy Java or JavaScript application build artifacts.</li>
+                <li>only mainstream Linux systems are supported and SSH is used for connection.</li>
+                <li>you can set the service access address as required for post-deploy health check.</li>
+                <li>you can configure the deployment results notification by WebHook.</li>
+            </ul>
         ]]>
     </description>
+
+    <!-- 插件版本变更信息，支持HTML标签;将展示在 settings | Plugins 对话框和插件仓库的Web页面 -->
+    <change-notes>
+        <![CDATA[
+            <h2>v1.0.0</h2>
+            <ul>
+                <li>add server management functions, support SSH, SFTP protocol.</li>
+                <li>add pre-build task execution.</li>
+                <li>added post-deploy health check and triggering Webhook.</li>
+                <li>added support for Maven and Gradle build tools.</li>
+                <li>added NPM and YARN project management tool support.</li>
+            </ul>
+        ]]>
+    </change-notes>
 
     <!-- 声明插件所依赖的其他插件的坐标 -->
     <!--    <depends></depends>-->
 
     <!-- 插件兼容IDEA的最大和最小 build 号，两个属性可以任选一个或者同时使用 -->
     <!--官网详细介绍：http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html-->
-    <idea-version since-build="3000"/>
+    <idea-version since-build="192"/>
 
     <!-- 插件所依赖的其他插件的id -->
     <!-- 官网详细介绍: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html-->
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.modules.java</depends>
 
     <!-- 声明应用组件 -->
     <!-- 在IDEA启动的时候初始化，整个IDEA中只有一个实例 -->
@@ -76,7 +89,7 @@
         <!-- 在这里添加action动作 -->
         <action id="action_add" class="com.gitee.x0e.idea.plugins.actions.AddAction" text="添加服务器" description="用于部署">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl T"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="Ctrl T"/>
         </action>
     </actions>
 </idea-plugin>
